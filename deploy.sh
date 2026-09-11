@@ -20,8 +20,6 @@ mkdir -p storage/logs
 mkdir -p storage/app/private
 mkdir -p storage/app/public
 
-chmod -R 775 bootstrap/cache storage
-
 echo "[2/5] Composer install"
 
 composer install \
@@ -30,18 +28,17 @@ composer install \
   --prefer-dist \
   --optimize-autoloader
 
-echo "[3/5] Laravel cache"
+echo "[3/5] Database / Laravel cache"
 
 if [ -f .env ]; then
+    php artisan migrate --force
     php artisan optimize:clear
     php artisan optimize
 else
-    echo ".env does not exist yet - skipping artisan optimize"
+    echo ".env does not exist yet - skipping Laravel commands"
 fi
 
-echo "[4/5] Permissions"
-
-chmod -R 775 bootstrap/cache storage
+echo "[4/5] Runtime directories ready"
 
 echo "[5/5] Done"
 
