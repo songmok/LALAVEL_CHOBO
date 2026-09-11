@@ -10,27 +10,27 @@ echo "================================="
 
 cd "$APP_DIR"
 
-echo "[1/5] Composer install"
+echo "[1/5] Prepare Laravel directories"
 
-composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --optimize-autoloader
-
-echo "[2/5] Storage directories"
-
+mkdir -p bootstrap/cache
 mkdir -p storage/framework/cache/data
 mkdir -p storage/framework/sessions
 mkdir -p storage/framework/views
 mkdir -p storage/logs
-mkdir -p bootstrap/cache
+mkdir -p storage/app/private
+mkdir -p storage/app/public
 
-echo "[3/5] Permissions"
+chmod -R 775 bootstrap/cache storage
 
-chmod -R 775 storage bootstrap/cache
+echo "[2/5] Composer install"
 
-echo "[4/5] Laravel"
+composer install \
+  --no-dev \
+  --no-interaction \
+  --prefer-dist \
+  --optimize-autoloader
+
+echo "[3/5] Laravel cache"
 
 if [ -f .env ]; then
     php artisan optimize:clear
@@ -38,6 +38,10 @@ if [ -f .env ]; then
 else
     echo ".env does not exist yet - skipping artisan optimize"
 fi
+
+echo "[4/5] Permissions"
+
+chmod -R 775 bootstrap/cache storage
 
 echo "[5/5] Done"
 
